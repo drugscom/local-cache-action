@@ -1,0 +1,24 @@
+name: 'Local artefact cache'
+description: 'Store and restore cached artefact from local storage'
+inputs:
+  force-save:
+    description: 'Force saving artifacts cache even if a previously cached entry was found'
+    required: false
+    default: 'false'
+  load-paths:
+    description: 'An ordered list of paths to use for restoring the cache if no cache hit occurred for save-path'
+    required: false
+  path:
+    description: 'A list of files, directories, and wildcard patterns to load from the cache'
+    required: true
+  save-path:
+    description: 'An explicit path for storing the artifact cache'
+    required: true
+outputs:
+  cache-hit:
+    description: 'Artefact found and loaded from cache'
+runs:
+  using: 'node12'
+  main: 'dist/load/index.js'
+  post: 'dist/save/index.js'
+  post-if: 'success()'

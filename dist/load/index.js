@@ -50,7 +50,6 @@ function getCacheFile(...paths) {
     });
 }
 function run() {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const savePath = utils.getInputAsString('save-path', { required: true });
@@ -76,7 +75,7 @@ function run() {
             core.info(`Extracting assets from file "${cacheFile}"`);
             tar.extract({
                 sync: true,
-                cwd: (_a = process.env['GITHUB_WORKSPACE']) !== null && _a !== void 0 ? _a : process.cwd(),
+                cwd: process.env['GITHUB_WORKSPACE'] ? process.env['GITHUB_WORKSPACE'] : process.cwd(),
                 file: cacheFile,
                 preservePaths: true
             });

@@ -42,7 +42,7 @@ async function run(): Promise<void> {
     core.info(`Extracting assets from file "${cacheFile}"`)
     tar.extract({
       sync: true,
-      cwd: process.env['GITHUB_WORKSPACE'] ?? process.cwd(),
+      cwd: process.env['GITHUB_WORKSPACE'] ? process.env['GITHUB_WORKSPACE'] : process.cwd(),
       file: cacheFile,
       preservePaths: true
     })

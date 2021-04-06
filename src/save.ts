@@ -33,7 +33,7 @@ function run(): void {
       tar.create(
         {
           sync: true,
-          cwd: process.env['GITHUB_WORKSPACE'] ?? process.cwd(),
+          cwd: process.env['GITHUB_WORKSPACE'] ? process.env['GITHUB_WORKSPACE'] : process.cwd(),
           file: savePath,
           preservePaths: true
         },

@@ -23,10 +23,7 @@ async function run(): Promise<void> {
       process.exit()
     }
 
-    const timer = utils.setTimer(
-      300000,
-      `Timed out waiting for lock on cache file ${cacheFile}`
-    )
+    const timer = utils.setTimer(300000, `Timed out waiting for lock on cache file ${cacheFile}`)
 
     while (utils.fileExist(`${cacheFile}.lock`)) {
       core.debug(`Waiting for lock on cache file "${cacheFile}"`)

@@ -1418,7 +1418,7 @@ function safeStat(path, followSymLinks = true) {
 exports.safeStat = safeStat;
 function setTimer(millis, message) {
     return setTimeout(function () {
-        core.setFailed(message ? message : 'Timer expired, aborting');
+        core.setFailed(message !== null && message !== void 0 ? message : 'Timer expired, aborting');
         process.exit(1);
     }, millis);
 }

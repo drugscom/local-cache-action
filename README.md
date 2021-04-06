@@ -26,6 +26,10 @@ An explicit path for storing the artifact cache.
 
 Artefact found and loaded from cache.
 
+### `cache-file`
+
+Cache hit source file.
+
 ## Example usage
 
 ```yaml

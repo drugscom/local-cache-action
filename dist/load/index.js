@@ -83,6 +83,7 @@ function run() {
             core.endGroup();
             core.startGroup('Set output');
             core.setOutput('cache-hit', 'true');
+            core.setOutput('cache-file', cacheFile);
             if (cacheFile === savePath) {
                 core.saveState('CACHE_HIT_PRIMARY', 'true');
             }

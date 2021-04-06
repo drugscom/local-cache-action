@@ -15,6 +15,8 @@ inputs:
     description: 'An explicit path for storing the artifact cache'
     required: true
 outputs:
+  cache-file:
+    description: 'Cache hit source file'
   cache-hit:
     description: 'Artefact found and loaded from cache'
 runs:

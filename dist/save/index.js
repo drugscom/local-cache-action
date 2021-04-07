@@ -31,7 +31,6 @@ const core = __importStar(__nccwpck_require__(2186));
 const tar = __importStar(__nccwpck_require__(4674));
 const utils = __importStar(__nccwpck_require__(2682));
 function run() {
-    var _a;
     try {
         const localPath = utils.getInputAsArray('path', { required: true });
         const savePath = utils.getInputAsString('save-path', { required: true });
@@ -56,7 +55,7 @@ function run() {
         try {
             tar.create({
                 sync: true,
-                cwd: (_a = process.env['GITHUB_WORKSPACE']) !== null && _a !== void 0 ? _a : process.cwd(),
+                cwd: process.env['GITHUB_WORKSPACE'] ? process.env['GITHUB_WORKSPACE'] : process.cwd(),
                 file: savePath,
                 preservePaths: true
             }, localPath);

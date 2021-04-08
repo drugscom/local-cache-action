@@ -60,9 +60,14 @@ function run() {
             }, localPath);
         }
         catch (error) {
-            releaseLock();
-            // noinspection ExceptionCaughtLocallyJS
-            throw error;
+            if (error.code === 'ENOENT') {
+                core.warning(error);
+            }
+            else {
+                releaseLock();
+                // noinspection ExceptionCaughtLocallyJS
+                throw error;
+            }
         }
         utils.okPath(savePath);
         releaseLock();

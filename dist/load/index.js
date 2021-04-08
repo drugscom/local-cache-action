@@ -54,10 +54,19 @@ function run() {
             const savePath = utils.getInputAsString('save-path', { required: true });
             const loadPaths = utils.getInputAsArray('load-paths');
             core.startGroup('Load the cached asset');
-            const cacheFile = yield getCacheFile(savePath, ...loadPaths);
-            if (!cacheFile) {
-                core.debug('Cache miss');
-                process.exit();
+            let cacheFile = savePath;
+            let primaryMatch = false;
+            if (utils.fileExist(cacheFile)) {
+                core.debug('Cache hit on the primary path');
+                primaryMatch = true;
+            }
+            else {
+                core.debug('Looking for asset cache on the secondary load paths');
+                cacheFile = yield getCacheFile(...loadPaths);
+                if (!cacheFile) {
+                    core.debug('Cache miss');
+                    process.exit();
+                }
             }
             const timer = utils.setTimer(300000, `Timed out waiting for lock on cache file ${cacheFile}`);
             while (utils.fileExist(`${cacheFile}.lock`)) {
@@ -82,7 +91,7 @@ function run() {
             core.startGroup('Set output');
             core.setOutput('cache-hit', 'true');
             core.setOutput('cache-file', cacheFile);
-            if (cacheFile === savePath) {
+            if (primaryMatch) {
                 core.saveState('CACHE_HIT_PRIMARY', 'true');
             }
             core.endGroup();

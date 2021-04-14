@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/drugscom/local-cache-action#readme",
   "dependencies": {
-    "@actions/core": "^1.2.6",
+    "@actions/core": "^1.2.7",
     "@actions/glob": "^0.1.1",
     "@actions/utils": "git+https://github.com/drugscom/actions-utils.git",
     "tar": "^6.1.0"

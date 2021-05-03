@@ -1,6 +1,6 @@
 {
   "name": "local-cache-action",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Store and restore cached artefact from local storage",
   "main": "lib/load.js",
   "types": "lib/load.d.ts",

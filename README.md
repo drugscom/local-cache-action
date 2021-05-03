@@ -24,11 +24,11 @@ An explicit path for storing the artifact cache.
 
 ### `cache-hit`
 
-Artefact found and loaded from cache.
+Artefact found and loaded from save-path.
 
 ### `cache-file`
 
-Cache hit source file.
+Where the artefact was loaded from.
 
 ## Example usage
 

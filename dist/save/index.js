@@ -34,7 +34,7 @@ function run() {
         const localPath = utils.getInputAsArray('path', { required: true });
         const savePath = utils.getInputAsString('save-path', { required: true });
         const forceSave = utils.getInputAsBool('force-save');
-        const cacheHit = core.getState('CACHE_HIT_PRIMARY');
+        const cacheHit = core.getState('CACHE_HIT');
         if (!forceSave) {
             if (cacheHit.toUpperCase() === 'TRUE') {
                 core.info('Cache hit from primary key, skipping save to cache');

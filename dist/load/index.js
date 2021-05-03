@@ -89,10 +89,10 @@ function run() {
             });
             core.endGroup();
             core.startGroup('Set output');
-            core.setOutput('cache-hit', 'true');
             core.setOutput('cache-file', cacheFile);
             if (primaryMatch) {
-                core.saveState('CACHE_HIT_PRIMARY', 'true');
+                core.setOutput('cache-hit', 'true');
+                core.saveState('CACHE_HIT', 'true');
             }
             core.endGroup();
         }

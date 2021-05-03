@@ -8,7 +8,7 @@ function run(): void {
     const savePath = utils.getInputAsString('save-path', {required: true})
     const forceSave = utils.getInputAsBool('force-save')
 
-    const cacheHit = core.getState('CACHE_HIT_PRIMARY')
+    const cacheHit = core.getState('CACHE_HIT')
 
     if (!forceSave) {
       if (cacheHit.toUpperCase() === 'TRUE') {

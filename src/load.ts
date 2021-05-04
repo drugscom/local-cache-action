@@ -29,33 +29,35 @@ async function run(): Promise<void> {
       cacheFile = await getCacheFile(...loadPaths)
       if (!cacheFile) {
         core.debug('Cache miss')
-        process.exit()
+        return
       }
     }
 
-    const timer = utils.setTimer(300000, `Timed out waiting for lock on cache file ${cacheFile}`)
+    await utils.waitForPathLock(cacheFile, 300000)
 
-    while (utils.fileExist(`${cacheFile}.lock`)) {
-      core.debug(`Waiting for lock on cache file "${cacheFile}"`)
-      utils.sleep(1000)
-    }
-
-    clearTimeout(timer)
-
-    if (!utils.fileExist(`${cacheFile}.ok`)) {
+    if (!utils.pathIsOk(cacheFile)) {
       core.warning(`Failed to verify integrity of cache file "${cacheFile}"`)
-      process.exit()
+      return
     }
     core.endGroup()
 
     core.startGroup('Extract cache file')
     core.info(`Extracting assets from file "${cacheFile}"`)
-    tar.extract({
-      sync: true,
-      cwd: process.env['GITHUB_WORKSPACE'] ? process.env['GITHUB_WORKSPACE'] : process.cwd(),
-      file: cacheFile,
-      preservePaths: true
-    })
+    try {
+      tar.extract({
+        sync: true,
+        cwd: process.env['GITHUB_WORKSPACE'] ? process.env['GITHUB_WORKSPACE'] : process.cwd(),
+        file: cacheFile,
+        preservePaths: true
+      })
+    } catch (error) {
+      if (error.code === 'TAR_BAD_ARCHIVE') {
+        core.warning(`Failed to read cache file "${cacheFile}", ignoring cache hit`)
+        return
+      }
+      // noinspection ExceptionCaughtLocallyJS
+      throw error
+    }
     core.endGroup()
 
     core.startGroup('Set output')

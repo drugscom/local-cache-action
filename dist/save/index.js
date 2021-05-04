@@ -27,30 +27,30 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(2186));
+const fs = __importStar(__nccwpck_require__(5747));
 const tar = __importStar(__nccwpck_require__(4674));
 const utils = __importStar(__nccwpck_require__(2682));
 function run() {
+    let releaseLock;
     try {
         const localPath = utils.getInputAsArray('path', { required: true });
         const savePath = utils.getInputAsString('save-path', { required: true });
         const forceSave = utils.getInputAsBool('force-save');
         const cacheHit = core.getState('CACHE_HIT');
-        if (!forceSave) {
-            if (cacheHit.toUpperCase() === 'TRUE') {
-                core.info('Cache hit from primary key, skipping save to cache');
-                process.exit();
-            }
-            if (utils.fileExist(savePath)) {
-                core.setFailed(`Cache file "${savePath}" already exists`);
-                process.exit(1);
-            }
+        if (cacheHit.toUpperCase() === 'TRUE' && !forceSave) {
+            core.info('Cache hit from primary key, skipping save to cache');
+            return;
+        }
+        releaseLock = utils.getPathLock(savePath);
+        if (!releaseLock) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error(`Failed to acquire lock for path "${savePath}"`);
+        }
+        if (utils.fileExist(savePath) && utils.pathIsOk(savePath) && !forceSave) {
+            // noinspection ExceptionCaughtLocallyJS
+            throw new Error(`Cache file "${savePath}" already exists`);
         }
         core.startGroup('Saving asset to cache');
-        const releaseLock = utils.getPathLock(savePath);
-        if (!releaseLock) {
-            core.setFailed(`Failed to acquire lock for path "${savePath}"`);
-            process.exit(1);
-        }
         try {
             tar.create({
                 sync: true,
@@ -58,23 +58,28 @@ function run() {
                 file: savePath,
                 preservePaths: true
             }, localPath);
+            utils.okPath(savePath);
         }
         catch (error) {
+            fs.unlinkSync(savePath);
             if (error.code === 'ENOENT') {
                 core.warning(error);
+                return;
             }
             else {
-                releaseLock();
                 // noinspection ExceptionCaughtLocallyJS
                 throw error;
             }
         }
-        utils.okPath(savePath);
-        releaseLock();
         core.endGroup();
     }
     catch (error) {
         core.setFailed(error.message);
+    }
+    finally {
+        if (releaseLock) {
+            releaseLock();
+        }
     }
 }
 run();
@@ -1321,8 +1326,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.sleep = exports.setTimer = exports.safeStat = exports.pathExists = exports.pathIsOk = exports.pathIsLocked = exports.okPath = exports.gitEventIsPushTag = exports.gitEventIsPushHead = exports.gitBranchIsLatest = exports.getPathLock = exports.getInputAsString = exports.getInputAsBool = exports.getInputAsArray = exports.getGitRef = exports.fileExist = exports.directoryExist = exports.gitRefRegex = void 0;
+exports.waitForPathLock = exports.sleep = exports.setTimer = exports.safeStat = exports.pathExists = exports.pathIsOk = exports.pathIsLocked = exports.okPath = exports.gitEventIsPushTag = exports.gitEventIsPushHead = exports.gitBranchIsLatest = exports.getPathLock = exports.getInputAsString = exports.getInputAsBool = exports.getInputAsArray = exports.getGitRef = exports.fileExist = exports.directoryExist = exports.gitRefRegex = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const fs = __importStar(__nccwpck_require__(5747));
 const fspath = __importStar(__nccwpck_require__(5622));
@@ -1442,6 +1456,31 @@ function sleep(millis) {
     while (new Date() <= limit) { }
 }
 exports.sleep = sleep;
+function waitForPathLock(path, millis) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise(function (resolve, reject) {
+            const timeout = setTimeout(function () {
+                clearTimeout(timeout);
+                clearInterval(interval);
+                reject(new Error(`ETOUT: Timed out waiting for lock on path "${path}"`));
+            }, millis);
+            const interval = setInterval(function () {
+                if (!pathIsLocked(path)) {
+                    clearTimeout(timeout);
+                    clearInterval(interval);
+                    resolve();
+                }
+                core.debug(`Waiting for lock on path "${path}"`);
+            }, 1000);
+            if (!pathIsLocked(path)) {
+                clearTimeout(timeout);
+                clearInterval(interval);
+                resolve();
+            }
+        });
+    });
+}
+exports.waitForPathLock = waitForPathLock;
 //# sourceMappingURL=utils.js.map
 
 /***/ }),

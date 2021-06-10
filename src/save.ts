@@ -8,7 +8,7 @@ function run(): void {
 
   try {
     const localPath = utils.getInputAsArray('path', {required: true})
-    const savePath = utils.getInputAsString('save-path', {required: true})
+    const savePath = core.getInput('save-path', {required: true})
     const forceSave = utils.getInputAsBool('force-save')
 
     const cacheHit = core.getState('CACHE_HIT')

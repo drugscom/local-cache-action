@@ -13,7 +13,7 @@ async function getCacheFile(...paths: string[]): Promise<string | undefined> {
 
 async function run(): Promise<void> {
   try {
-    const savePath = utils.getInputAsString('save-path', {required: true})
+    const savePath = core.getInput('save-path', {required: true})
     const loadPaths = utils.getInputAsArray('load-paths')
 
     core.startGroup('Load the cached asset')

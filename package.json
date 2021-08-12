@@ -27,7 +27,7 @@
     "@actions/core": "^1.4.0",
     "@actions/glob": "^0.2.0",
     "@actions/utils": "git+https://github.com/drugscom/actions-utils.git",
-    "tar": "^6.1.7"
+    "tar": "^6.1.8"
   },
   "private": true,
   "devDependencies": {
